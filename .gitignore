@@ -16,3 +16,9 @@
 *.exe
 *.out
 *.app
+*.elf
+*.hex
+*.lst
+
+# temp files 
+*.swp
