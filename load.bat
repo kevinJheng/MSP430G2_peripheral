@@ -7,7 +7,7 @@ rem Last modified: 02/25/2011
 :input
 @echo MSP-EXP430G2-LaunchPad Firmware Programmer
 
-set device=MSP430G2231
+set device=MSP430G2553
 set firmware=msp430.hex
 
 @echo Programing %firmware% into %device% ......

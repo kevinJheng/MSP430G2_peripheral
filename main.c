@@ -19,7 +19,7 @@
 // Built with Code Composer Studio v4
 //***************************************************************************************
 #include "msp430g2553.h"
-#include "redbutton\redbutton.h"
+#include "script\redbutton.h"
 
 #define LED_0 BIT0 
 #define LED_1 BIT6
