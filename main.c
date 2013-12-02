@@ -18,8 +18,9 @@
 // June 2010
 // Built with Code Composer Studio v4
 //***************************************************************************************
-#include "msp430g2553.h"
-#include "script\redbutton.h"
+#include <msp430g2553.h>
+#include "LaunchpadRev1_5/launchpad.h"
+#include "redled/redled.h"
 
 #define LED_0 BIT0 
 #define LED_1 BIT6
@@ -43,7 +44,7 @@ int main(void)
 
 	//if(blink > 0)
 	{
-	    P1OUT ^= (  LED_1); // Toggle P1.0 and P1.6 using exclusive-OR
+	    P1OUT ^= (  green_LED); // Toggle P1.0 and P1.6 using exclusive-OR
 	    redbutton();
 
 
