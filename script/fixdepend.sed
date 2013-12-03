@@ -1,2 +1,2 @@
-s/\.[ch]$/&\n\t$(CC) -c $(CFLAGS) -o $(@) $(<)/
+s/\.[hc]$/&\n\t$(CC) -o $(@) -c $(CFLAGS)  $(<)/i
 

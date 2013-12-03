@@ -1,6 +1,7 @@
 #ifndef __INIT_CUSTOM_H
 #define __INIT_CUSTOM_H
 
+#define CPU_Speed_Mhz 8
 
 void Init_Timer(void);
 void start_up_INIT(void);

@@ -5,10 +5,11 @@
 #SOURCE := $(wildcard \
 #    	  	$(addsuffix /*.c,$(SUBDIR) )  \
 #           )
+SHELL := cmd.exe
 
 include sources.mak
 OBJS := $(notdir $(SOURCE:.c=.o))
-SHELL := cmd.exe
+
 #-----------------------------
 
 TARGET     = LaunchpadRev1_5
@@ -16,11 +17,14 @@ MCU        = msp430g2553
 # List all the source files here
 # eg if you have a source file foo.c then list it here
 # Include are located in the Include directory
-INCLUDES = -I ./Include
+
+#INCLUDES := include
+include searchpath.mak
+
 # Add or subtract whatever MSPGCC flags you want. There are plenty more
 #######################################################################################
 #CFLAGS   = -mmcu=$(MCU) -g -Os -Wall -Wunused $(INCLUDES) -lm
-CFLAGS   = -mmcu=$(MCU)     -Os -Wall -Wunused -lm -Wextra $(INCLUDES)
+CFLAGS   = -mmcu=$(MCU) -Os -Wall -Wunused -lm -Wextra $(INCLUDES)
 ASFLAGS  = -mmcu=$(MCU) -x assembler-with-cpp -Wa,-gstabs
 LDFLAGS  = -mmcu=$(MCU) -Wl,-Map=$(TARGET).map
 ########################################################################################
@@ -45,14 +49,14 @@ LOADER  = MSP430Flasher.exe
 #CP      = cp -p
 
 
-.PHONY: all clean load
+.PHONY: all clean load dev
 all: $(TARGET).elf $(TARGET).hex $(TARGET).list tags 
 load: $(TARGET).lad
 # link all objects into an elf File & report size
 $(TARGET).elf: $(OBJS)
 	@echo ---- Linking $@ ----
 	$(CC) $(CFLAGS) $(OBJS) -o $(TARGET).elf
-	$(SIZE) $(TARGET).elf
+	$(SIZE) $(@)
 
 #generate hex format
 %.hex: %.elf
@@ -71,6 +75,10 @@ tags: $(SOURCE)
 	ctags -R
 
 include depend.mak
+
+#for development purpose
+dev:
+	@echo INCLUDES=$(INCLUDES)
 
 clean:
 	$(RM) *.mak *.o  *.d *.elf *.bin *.hex *.srec *.list *.orig *.lad tags

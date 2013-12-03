@@ -70,8 +70,13 @@ void Init_GPIO(void)
  */
 void Init_clock_system(void)
 {
+#if CPU_Speed_Mhz==8
     BCSCTL1 = CALBC1_8MHZ;      /* Set DCO to 8MHz */
     DCOCTL = CALDCO_8MHZ;
+#else 
+    BCSCTL1 = CALBC1_1MHZ;      /* Set DCO to 8MHz */
+    DCOCTL = CALDCO_1MHZ;
+#endif
 
     BCSCTL1 &= ~XTS;	//LFXT1 mode: low-frequency
     BCSCTL3 &=  ~LFXT1OF; //LFXT1 oscillator fault not present

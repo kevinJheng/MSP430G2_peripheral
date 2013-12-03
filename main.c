@@ -19,9 +19,9 @@
 // Built with Code Composer Studio v4
 //***************************************************************************************
 #include <msp430g2553.h>
-#include "./init/init_custom.h"
-#include "./LaunchpadRev1_5/launchpad.h"
-#include "./redled/redled.h"
+#include "init_custom.h"
+#include "launchpad.h"
+#include "redled.h"
 #include "delay.h"
 
 #define LED_0 BIT0 
@@ -45,7 +45,7 @@ int main(void)
 	//if(blink > 0)
 	{
 	    P1OUT ^= (  green_LED); // Toggle P1.0 and P1.6 using exclusive-OR
-	    redbutton();
+	    //redbutton();
 
 
 	    DELAY_MS(500);

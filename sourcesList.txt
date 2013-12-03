@@ -1,3 +1,5 @@
 ./init/init_custom.c
 ./main.c
 ./redled/redled.c
+./LibEmb/libserial/src/serial_usci_msp430.c
+./LaunchpadRev1_5/launchpad.h
