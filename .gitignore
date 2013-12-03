@@ -3,6 +3,7 @@
 *.ko
 tags
 msp430g2553.h
+Log/
 
 # Libraries
 *.lib

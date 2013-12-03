@@ -7,4 +7,7 @@
 #define TXD BIT1           // TXD on P1.1
 #define RXD BIT2           // RXD on P1.2
 
+#define button     BIT3
+#define A5_input BIT5
+
 #endif

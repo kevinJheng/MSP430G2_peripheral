@@ -19,8 +19,10 @@
 // Built with Code Composer Studio v4
 //***************************************************************************************
 #include <msp430g2553.h>
-#include "LaunchpadRev1_5/launchpad.h"
-#include "redled/redled.h"
+#include "./init/init_custom.h"
+#include "./LaunchpadRev1_5/launchpad.h"
+#include "./redled/redled.h"
+#include "delay.h"
 
 #define LED_0 BIT0 
 #define LED_1 BIT6
@@ -33,9 +35,7 @@ unsigned int blink = 0;
 int main(void)
 {
     WDTCTL = WDTPW + WDTHOLD; // Stop watchdog timer
-    LED_DIR |= (LED_0 + LED_1); // Set P1.0 and P1.6 to output direction
-    LED_OUT &= ~(LED_0 + LED_1); // Set the LEDs off
-    //P1IE |= BUTTON;
+    start_up_INIT();
 
     //__enable_interrupt();
 
@@ -48,7 +48,7 @@ int main(void)
 	    redbutton();
 
 
-	    __delay_cycles(200000); // SW Delay of 10000 cycles at 1Mhz
+	    DELAY_MS(500);
 
 	}
     }

@@ -1,1 +1,1 @@
-SOURCE := ./main.c ./redled/redled.c 
+SOURCE := ./init/init_custom.c ./main.c ./redled/redled.c 

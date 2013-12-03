@@ -43,12 +43,12 @@ LOADER  = MSP430Flasher.exe
 #CP      = cp -p
 
 
-.PHONY: all clean
-all: $(TARGET).elf $(TARGET).hex $(TARGET).list tags $(TARGET).lad
+.PHONY: all clean load
+all: $(TARGET).elf $(TARGET).hex $(TARGET).list tags 
+load: $(TARGET).lad
 
 $(TARGET).elf: $(OBJS)
-	@echo " "
-	@echo "---- Linking $@ ----"
+	@echo ---- Linking $@ ----
 	$(CC) $(CFLAGS) $(OBJS) -o $(TARGET).elf
 	$(SIZE) $(TARGET).elf
 

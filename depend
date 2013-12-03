@@ -1,4 +1,8 @@
-main.o: main.c LaunchpadRev1_5/launchpad.h redled/redled.h
+init_custom.o: init/init_custom.c init/init_custom.h \
+ init/../LaunchpadRev1_5/launchpad.h init/../delay.h
+	$(CC) -c $(CFLAGS) -o $(@) $(<)
+main.o: main.c init/init_custom.h LaunchpadRev1_5/launchpad.h \
+ redled/redled.h
 	$(CC) -c $(CFLAGS) -o $(@) $(<)
 redled.o: redled/redled.c redled/redled.h \
  redled/../LaunchpadRev1_5/launchpad.h
