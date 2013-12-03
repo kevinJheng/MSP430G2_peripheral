@@ -4,14 +4,15 @@ MSP430G2_peripheral
 to build a MSP430G2(or above) line's lib as eaiser as possible
 
 
-auto detect & grenerate dependency Tool: build.bat
-    it generates file "sources" & "depend" which describe all source files and it's dependency recpectively. and the makefile read them as the compilation parameter. 
+auto config & make tool: build.bat
+    it generates file "sources.mak" & "depend.mak" which describe all source files and it's dependency recpectively. and the makefile read them as the compilation parameter. 
 
-simplicity:
-	1.detect file & it's dependency: config.bat
-	2.compile project: make
+To generate hex File: all .c source describe inside "sourcesList.txt"
+    1. build clean (Enter)
+    2. build       (Enter)
     
-consequently: auto generate proper makefile -> compile -> load into MSP430
+    note: 
+	source list for makefile     : sources.mak
+	dependency list for make file: depend.mak
+	requirement                  : make、sed、grep、tr、mspgcc
 
-    requirement: make、find、sed、grep、tr
-    (all included in PowerShell)

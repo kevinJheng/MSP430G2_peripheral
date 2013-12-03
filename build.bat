@@ -1,4 +1,4 @@
 @echo off
 
 call config.bat
-make
+make %1 %2 %3 %4

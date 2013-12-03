@@ -5,7 +5,8 @@
 #SOURCE := $(wildcard \
 #    	  	$(addsuffix /*.c,$(SUBDIR) )  \
 #           )
-include sources
+
+include sources.mak
 OBJS := $(notdir $(SOURCE:.c=.o))
 SHELL := cmd.exe
 #-----------------------------
@@ -15,29 +16,30 @@ MCU        = msp430g2553
 # List all the source files here
 # eg if you have a source file foo.c then list it here
 # Include are located in the Include directory
-#INCLUDES = -IInclude
+INCLUDES = -I ./Include
 # Add or subtract whatever MSPGCC flags you want. There are plenty more
 #######################################################################################
 #CFLAGS   = -mmcu=$(MCU) -g -Os -Wall -Wunused $(INCLUDES) -lm
-CFLAGS   = -mmcu=$(MCU)     -Os -Wall -Wunused -lm -Wextra 
+CFLAGS   = -mmcu=$(MCU)     -Os -Wall -Wunused -lm -Wextra $(INCLUDES)
 ASFLAGS  = -mmcu=$(MCU) -x assembler-with-cpp -Wa,-gstabs
 LDFLAGS  = -mmcu=$(MCU) -Wl,-Map=$(TARGET).map
 ########################################################################################
 CC      = msp430-gcc
-LD      = msp430-ld
-AR      = msp430-ar
-AS      = msp430-gcc
-GASP    = msp430-gasp
-NM      = msp430-nm
 OBJCOPY = msp430-objcopy
-RANLIB  = msp430-ranlib
-STRIP   = msp430-strip
 SIZE    = msp430-size
-READELF = msp430-readelf
 OBJDUMP = msp430-objdump.exe
 RM      = rm -f
 TAGER   = ctag
 LOADER  = MSP430Flasher.exe
+
+#LD      = msp430-ld
+#AR      = msp430-ar
+#AS      = msp430-gcc
+#GASP    = msp430-gasp
+#NM      = msp430-nm
+#RANLIB  = msp430-ranlib
+#STRIP   = msp430-strip
+#READELF = msp430-readelf
 #MV      = mv
 #MAKETXT = srec_cat
 #CP      = cp -p
@@ -46,28 +48,30 @@ LOADER  = MSP430Flasher.exe
 .PHONY: all clean load
 all: $(TARGET).elf $(TARGET).hex $(TARGET).list tags 
 load: $(TARGET).lad
-
+# link all objects into an elf File & report size
 $(TARGET).elf: $(OBJS)
 	@echo ---- Linking $@ ----
 	$(CC) $(CFLAGS) $(OBJS) -o $(TARGET).elf
 	$(SIZE) $(TARGET).elf
 
+#generate hex format
 %.hex: %.elf
 	$(OBJCOPY) -O ihex $< $@
 
+#generate source list file
 %.list: %.elf
 	$(OBJDUMP) -DS $< > $@
+
+#generate load record & load into MCU
+%.lad: %.hex	
+	@echo "---- Load $< into $(MCU)----"
+	$(LOADER) -n $(MCU) -w $(<) -v -z [VCC] && touch $@
 
 tags: $(SOURCE)
 	ctags -R
 
-%.lad: %.hex
-	@echo "---- Load $< into $(MCU)----"
-	$(LOADER) -n $(MCU) -w $(<) -v -z [VCC] && touch $@
-
-include depend
-
+include depend.mak
 
 clean:
-	$(RM) *.o  *.d *.elf *.bin *.hex *.srec *.list *.orig *.lad tags
+	$(RM) *.mak *.o  *.d *.elf *.bin *.hex *.srec *.list *.orig *.lad tags
 
