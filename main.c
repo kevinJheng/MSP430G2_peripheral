@@ -1,28 +1,10 @@
-//***************************************************************************************
-// MSP430 Blink LED / Start Stop Blinking with Button Demo - Software Toggle P1.0 & P1.6
-//
-// Description; Toggle P1.0 and P1.6 by xor'ing them inside of a software loop. To
-// start/stop blink, an interrupt in Port 1 will toggle the condition statement. 
-// ACLK = n/a, MCLK = SMCLK = default DCO
-//
-// MSP430x2xx
-// -----------------
-// /|\| XIN|-
-// | | |
-// --|RST XOUT|-
-// | P1.6|-->LED
-// Button -->|P1.3 P1.0|-->LED
-//
-// Aldo Briano
-// Texas Instruments, Inc
-// June 2010
-// Built with Code Composer Studio v4
-//***************************************************************************************
+
 #include <msp430g2553.h>
+#include "BOARD_SPEC.h"
 #include "init_custom.h"
-#include "launchpad.h"
 #include "redled.h"
 #include "delay.h"
+#include "serial.h"
 
 #define LED_0 BIT0 
 #define LED_1 BIT6
@@ -37,18 +19,21 @@ int main(void)
     WDTCTL = WDTPW + WDTHOLD; // Stop watchdog timer
     start_up_INIT();
 
-    //__enable_interrupt();
 
     for (;;)
     {
 
 	//if(blink > 0)
 	{
+
+
 	    P1OUT ^= (  green_LED); // Toggle P1.0 and P1.6 using exclusive-OR
+	    putchar('a');
+	    putchar('b');
+	    putchar('c');
+
 	    //redbutton();
-
-
-	    DELAY_MS(500);
+	    DELAY_MS(50);
 
 	}
     }

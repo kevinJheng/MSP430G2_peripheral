@@ -81,5 +81,5 @@ dev:
 	@echo INCLUDES=$(INCLUDES)
 
 clean:
-	$(RM) *.mak *.o  *.d *.elf *.bin *.hex *.srec *.list *.orig *.lad tags
+	$(RM) *.mak *.o  *.d *.elf *.bin *.hex *.srec *.list *.orig *.lad tags *.tmp
 

@@ -9,7 +9,7 @@ rem cat sources.mak
 
 @echo ----gen. content of searchpath.mak----
 cat sourcesList.txt | sed -rf script/dir.sed | sort|uniq > c_path.list
-cat c_path.list | sed -rf script/dir2.sed | tr '\n' ' ' |sed "s/\./-I ./g" > searchpath.mak
+cat c_path.list | sed -rf script/dir2.sed | tr '\n' ' ' |sed "s/\./-I ./g" | sed "s/ \.\/ / . /" > searchpath.mak
 
 
 @echo ----gen. content of depend.mak----

@@ -23,72 +23,63 @@
 #include <stdbool.h>
 
 #include "serial.h"
+#include "BOARD_SPEC.h"
 
-/**
- * RXD pin
+
+unsigned char * ptrSerial = stAddr_UART;
+#define Port_SEL  *(ptrSerial+ 0x6)
+#define Port_SEL2 *(ptrSerial+0x21)
+
+/* MSP430 USCI's recommend (re)configure procedure
+ *     1. Set UCSWRST
+ *     2. initialize all USCI register
+ *     3. configure port
+ *     4. Clear UCSWRST
+ *     5. (optional) enable interrupt UCAxRXIE/UCAxTXIE
  */
-#define UART_RXD   		BIT1		
 
-/**
- * TXD pin
+//NFM: msp430g2_userGuide p.430 15.3.9 UART Baurd Rate Generation
+void serial_init(void)
+{
+    UCA0CTL1 |= UCSWRST;    //procedure (1)
+
+/*---- procedure (2)  ----
+ *UCA0BR1 = UCBRx/256; UCA0BR0 = UCBRx mod 256; UCA0MCTL = UCBRS_x + UCBRS_x;
+ *setting from SLAU1441 (MSP430x2xx Family User's Guide)
+ *     p.435 Table 15-4 & p.436 Table 15-5
  */
-#define UART_TXD   		BIT2	
+    UCA0CTL1 |= UCSSEL_2;   //use SMCLK
+#if CPU_Speed_Mhz == 1
+    #if BaurdRate == 9600
+	UCA0BR1 = 0; UCA0BR0 = 104; UCA0MCTL = UCBRS_0; 
+    #endif
 
-void serial_init(unsigned int baudrate)
-{
-	serial_clk_init(1000000L, baudrate);
+#elif CPU_Speed_Mhz == 8
+    #if BaurdRate == 9600 
+	UCA0BR1 = 3; UCA0BR0 = 65; UCA0MCTL = UCBRS_2; 
+    #endif
+#endif
+
+    Port_SEL |= rxbit_UART + txbit_UART;
+    Port_SEL2|= rxbit_UART + txbit_UART;  //procedure (3)
+    UCA0CTL1 &= ~UCSWRST; 
 }
+//  Table 15-6. USCI_A0 Control and Status Registers
+//Register Short Form                    , Register   , Type       , Address , Initial State
+//USCI_A0 control register 0             , UCA0CTL0   , Read/write , 060h    , Reset with PUC
+//USCI_A0 control register 1             , UCA0CTL1   , Read/write , 061h    , 001h with PUC
+//USCI_A0 Baud rate control register 0   , UCA0BR0    , Read/write , 062h    , Reset with PUC
+//USCI_A0 baud rate control register 1   , UCA0BR1    , Read/write , 063h    , Reset with PUC
+//USCI_A0 modulation control register    , UCA0MCTL   , Read/write , 064h    , Reset with PUC
+//USCI_A0 status register                , UCA0STAT   , Read/write , 065h    , Reset with PUC
+//USCI_A0 receive buffer register        , UCA0RXBUF  , Read       , 066h    , Reset with PUC
+//USCI_A0 transmit buffer register       , UCA0TXBUF  , Read/write , 067h    , Reset with PUC
+//USCI_A0 Auto baud control register     , UCA0ABCTL  , Read/write , 05Dh    , Reset with PUC
+//USCI_A0 IrDA transmit control register , UCA0IRTCTL , Read/write , 05Eh    , Reset with PUC
+//USCI_A0 IrDA receive control register  , UCA0IRRCTL , Read/write , 05Fh    , Reset with PUC
+//SFR interrupt enable register 2        , IE2        , Read/write , 001h    , Reset with PUC
+//SFR interrupt flag register 2          , IFG2       , Read/write , 003h    , 00Ah with PUC
 
-void serial_clk_init(long clkspeed, unsigned int baudrate)
-{
-	P1SEL    |= UART_RXD + UART_TXD;                       
-  	P1SEL2   |= UART_RXD + UART_TXD;                       
-  	UCA0CTL1 |= UCSSEL_2; 
-
-	switch(clkspeed) {
-		case  1000000L:
-			switch(baudrate) {
-				case   9600: UCA0BR0 = 0x06; UCA0MCTL = 0x81; break;
-				case  19200: UCA0BR0 = 0x03; UCA0MCTL = 0x41; break;
-				case  57600: UCA0BR0 = 0x01; UCA0MCTL = 0x0F; break;
-				default    : UCA0BR0 = 0x06; UCA0MCTL = 0x81; break;
-			};
-			break;
-		case  8000000L:
-			switch(baudrate) {
-				case   9600: UCA0BR0 = 0x34; UCA0MCTL = 0x11; break;
-				case  19200: UCA0BR0 = 0x1a; UCA0MCTL = 0x11; break;
-				case  38400: UCA0BR0 = 0x0d; UCA0MCTL = 0x01; break;
-				case  57600: UCA0BR0 = 0x08; UCA0MCTL = 0xb1; break;
-				case 115200: UCA0BR0 = 0x04; UCA0MCTL = 0x3b; break;
-				case 230400: UCA0BR0 = 0x02; UCA0MCTL = 0x27; break;	
-				default    : UCA0BR0 = 0x34; UCA0MCTL = 0x11; break;
-			};
-			break;
-		case 16000000L:
-			switch(baudrate) {
-				case   9600: UCA0BR0 = 0x68; UCA0MCTL = 0x31; break;
-				case  19200: UCA0BR0 = 0x34; UCA0MCTL = 0x11; break;
-				case  38400: UCA0BR0 = 0x1a; UCA0MCTL = 0x11; break;
-				case  57600: UCA0BR0 = 0x11; UCA0MCTL = 0x61; break;
-				case 115200: UCA0BR0 = 0x08; UCA0MCTL = 0xb1; break;
-				case 230400: UCA0BR0 = 0x04; UCA0MCTL = 0x3b; break;	
-				default    : UCA0BR0 = 0x68; UCA0MCTL = 0x31; break;
-			};
-			break;
-		default:
-			switch(baudrate) {
-				case   9600: UCA0BR0 = 0x06; UCA0MCTL = 0x81; break;
-				case  19200: UCA0BR0 = 0x03; UCA0MCTL = 0x41; break;
-				case  57600: UCA0BR0 = 0x01; UCA0MCTL = 0x0F; break;
-				default    : UCA0BR0 = 0x06; UCA0MCTL = 0x81; break;
-			};
-			break;
-	}
- 
-  	UCA0BR1   = 0;
-  	UCA0CTL1 &= ~UCSWRST; 
-}
 
 void serial_send(unsigned char data)
 {
@@ -111,3 +102,13 @@ unsigned char serial_recv_blocking()
     while (!(IFG2&UCA0RXIFG));         		// USCI_A0 RX buffer ready?
 	return UCA0RXBUF;
 }
+
+int putchar(unsigned char c)
+{
+    if (c=='\n') putchar('\r');
+
+    while (!(IFG2&UCA0TXIFG));              // USCI_A0 TX buffer ready?
+    UCA0TXBUF = c;                    		// TX
+    return 1;
+}
+

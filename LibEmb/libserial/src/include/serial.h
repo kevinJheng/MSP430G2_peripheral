@@ -24,17 +24,17 @@
  * Initialize the default USART with the given baudrate.
  *
  * @param[in]	baudrate	the baudrate of the USART
- */
-void serial_init(unsigned int baudrate);
-
-/**
+*----------------------------------------------------------
+  void serial_clk_init(long clkspeed, unsigned int baudrate);
  * Initialize the default USART for given CLK speed with 
  * given baudrate.
  *
  * @param[in]	clkspeed	the speed of the CLK for the USART 
  * @param[in]	baudrate	the baudrate of the USART
  */
-void serial_clk_init(long clkspeed, unsigned int baudrate);
+void serial_init(void);
+int putchar(unsigned char c);
+
 
 /**
  * Send a byte non-blocking through the default USART.

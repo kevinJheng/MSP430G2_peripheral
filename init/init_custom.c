@@ -2,16 +2,21 @@
 #include "init_custom.h"
 #include "../LaunchpadRev1_5/launchpad.h"
 #include "../delay.h"
+#include "serial.h"
+
 
 
 void start_up_INIT(void)
 {
     Init_clock_system();
     Init_GPIO();
-    Init_Timer();
+    //Init_Timer();
     //uart_init(); //DCO=8Mhz
     //uart_set_rx_isr_ptr(uart_rx_isr);
-    Init_ADC10(); DELAY_US(30);
+
+    serial_init();
+    //Init_ADC10(); DELAY_US(30);
+
 
 
 }
@@ -70,12 +75,20 @@ void Init_GPIO(void)
  */
 void Init_clock_system(void)
 {
-#if CPU_Speed_Mhz==8
-    BCSCTL1 = CALBC1_8MHZ;      /* Set DCO to 8MHz */
-    DCOCTL = CALDCO_8MHZ;
+#if  CPU_Speed_Mhz == 1
+    BCSCTL1 = CALBC1_1MHZ;
+    DCOCTL  = CALDCO_1MHZ;
+#elif CPU_Speed_Mhz == 8
+    BCSCTL1 = CALBC1_8MHZ;
+    DCOCTL  = CALDCO_8MHZ;
+#elif CPU_Speed_Mhz == 12
+    BCSCTL1 = CALBC1_12MHZ;
+    DCOCTL  = CALDCO_12MHZ;
+#elif CPU_Speed_Mhz == 16
+    BCSCTL1 = CALBC1_16MHZ;
+    DCOCTL  = CALDCO_16MHZ;
 #else 
-    BCSCTL1 = CALBC1_1MHZ;      /* Set DCO to 8MHz */
-    DCOCTL = CALDCO_1MHZ;
+#pragma message ( "CPU_Speed_Mhz setting unspoorted" )
 #endif
 
     BCSCTL1 &= ~XTS;	//LFXT1 mode: low-frequency
