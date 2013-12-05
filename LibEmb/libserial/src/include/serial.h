@@ -34,7 +34,7 @@
  */
 void serial_init(void);
 int putchar(unsigned char c);
-
+int getchar(void);
 
 /**
  * Send a byte non-blocking through the default USART.

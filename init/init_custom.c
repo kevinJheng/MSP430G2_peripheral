@@ -1,37 +1,56 @@
 #include <msp430g2553.h>
 #include "init_custom.h"
-#include "../LaunchpadRev1_5/launchpad.h"
-#include "../delay.h"
-#include "serial.h"
 
+#include "board_spec.h"
+#include "delay.h"
+#include "serial.h"
+#include "times.h"
+
+extern TIMES now;
 
 
 void start_up_INIT(void)
 {
     Init_clock_system();
     Init_GPIO();
-    //Init_Timer();
-    //uart_init(); //DCO=8Mhz
-    //uart_set_rx_isr_ptr(uart_rx_isr);
-
+    Init_Timer();
     serial_init();
     //Init_ADC10(); DELAY_US(30);
+    //
 
 
 
 }
 
+
+/* Note about Timer_A from SLAU049F
+ * 
+ * 1.stop timer before config.
+ * 2.when timer's clok & cpu is asynchronous 
+ *   any read of TAR should occur while timer stoped
+ *   or taken majority vote with multiple reading val
+ *
+ */
+// Timer A0 interrupt service routine
+#pragma vector=TIMER0_A0_VECTOR
+__interrupt void Timer_A (void)
+{
+    times_step_up(&now,0);
+ 	    printf("h:m:s:min=  %2d:",now.hour);
+	    printf("%2d:",now.minute);
+	    printf("%2d:",now.sec);
+	    printf("%2d\n",now.min_inc);
+   P1OUT ^= red_LED;                            // Toggle P1.0
+}
 void Init_Timer(void)
 {
-    CCTL0 = CCIE;                             // CCR0 interrupt enabled
+    TACTL |= TACLR; // reset timer
 
-    CCR0 = 32768/8-1; //1 sec
-    //CCR0 = 4096/8-1;  //   1/8 sec
-
+    TACCTL0 = CCIE;      // CCR0 interrupt enabled
     TACTL =  0
 //	  | TASSEL_0 //TA source: TACLK
 	  | TASSEL_1 //TA source: ACLK
-	  //| TASSEL_2 //TA source: SMCLK
+//        | TASSEL_2 //TA source: SMCLK
 //	  | TASSEL_3 //TA source: TCLK
 /* ------------------------------------------- */
 //	  | ID_0   //clock divide 1
@@ -46,6 +65,15 @@ void Init_Timer(void)
 //	  | MC_3 //  UP/Down    mode
 /* ------------------------------------------- */
 	  ;
+	CCR0 = (32768/8-1); //1 sec
+/*
+ * UP mode:
+ *     TAR counts from 0 to TACCR0 repeatedly
+ *     period = TACCR0+1
+ * Continuous mode: ...to be continued...
+ * UP/Down mode:    ...to be continued...
+ *
+ */
 
 }
 

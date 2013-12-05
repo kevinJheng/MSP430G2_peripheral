@@ -112,3 +112,11 @@ int putchar(unsigned char c)
     return 1;
 }
 
+int getchar(void)
+{
+    while (!(IFG2&UCA0RXIFG));                // USCI_A0 RX buffer ready?
+	return UCA0RXBUF;
+}
+
+
+

@@ -2,7 +2,7 @@
 *.o
 *.ko
 tags
-msp430g2553.h
+#msp430g2553.h
 Log/
 
 # Libraries
