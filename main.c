@@ -8,20 +8,15 @@
 #include "serial.h"
 #include "times.h"
 
-#define LED_0 BIT0 
-#define LED_1 BIT6
-#define LED_OUT P1OUT
-#define LED_DIR P1DIR
-#define BUTTON BIT3
+#define DTC_Size 16
 
-unsigned int blink = 0;
+TIMES now;
 
 unsigned char gdigit()
 {
     return getchar()-'0';
 }
 
-TIMES now;
 
 int main(void)
 {
@@ -33,54 +28,72 @@ int main(void)
     now.sec=0     ;
     now.min_inc=0 ;
 
-
-    //scanf("%d",(int *)&(now.hour));
-    now.hour = gdigit()*10;
-    now.hour += gdigit();
-
-    now.minute = gdigit()*10;
-    now.minute += gdigit();
-
-    now.sec = gdigit()*10;
-    now.sec += gdigit();
-
+/*  ----to set initial time----
+    now.hour = gdigit()*10;now.hour += gdigit();
+    now.minute = gdigit()*10;now.minute += gdigit();
+    now.sec = gdigit()*10;now.sec += gdigit();
     getchar(); //wait enter
-    
+*/
+    unsigned int counter;
+    unsigned int adresult[DTC_Size];
+
+	// reset array
+	    for (counter = 0; counter < 16; counter++) 
+		adresult[counter] = 0;
+	// -----------
+    Init_ADC10_DTC_trigCCR0_Single_Channel(DTC_Size,adresult);
+
+
+
     _BIS_SR( GIE);                 // Enable interrupt
+	printf("---- start ----");  //inital print
+	printf("%2d:",now.hour);  //inital print
+	printf("%2d:",now.minute);
+	printf("%2d:",now.sec);
+	printf("%2d\n",now.min_inc);
     for (;;)
     {
 
-	//if(blink > 0)
-	{
+	__bis_SR_register(LPM3_bits);     // Enter LPM3, enable interrupts
+	
 
-
-	    P1OUT ^= (  green_LED); // Toggle P1.0 and P1.6 using exclusive-OR
-	    DELAY_MS(10);
-
-
-
-//	    if( times_step_up(&now,10)==1)
-//		break;
-
-
-
-
-	    P1OUT ^= (  green_LED); // Toggle P1.0 and P1.6 using exclusive-OR
-	    DELAY_MS(500);
-	    //redbutton();
-
+	P1OUT ^= green_LED;                          
+	printf("%p", adresult);
+	for (counter = 0; counter < 16; counter++) {
+	    printf(",%3d", adresult[counter]);
+	    adresult[counter]=0;
 	}
+	putchar('\n');
+	P1OUT ^= green_LED;                         
+    
     }
 
 } 
 
+// ADC10 interrupt service routine
+#pragma vector=ADC10_VECTOR
+__interrupt void ADC10_ISR(void)
+{
+  //__bic_SR_register_on_exit(LPM3_bits);     // Clear LPM3 bits from 0(SR)
+  int counter;
+  static unsigned int num =0;
+  num+=1;
+  putchar('a');putchar('d');putchar('c');
+  putchar('{');putchar('0'+num); putchar('}');
+
+  if (num == 9) num=0;
+
+  
+}
+
 // Port 1 interrupt service routine
+/*
 #pragma vector=PORT1_VECTOR
 __interrupt void Port_1(void)
 {
-    blink ^= 0x01;
-    P1IFG &= ~BUTTON; // P1.3 IFG cleared
-    LED_OUT &= ~(LED_0 + LED_1); // Clear the LEDs so they start in OFF state
+    P1IFG &= ~button; // P1.3 IFG cleared
+    P1OUT &= ~(red_LED + green_LED); // Clear the LEDs so they start in OFF state
 
 }
+*/
 

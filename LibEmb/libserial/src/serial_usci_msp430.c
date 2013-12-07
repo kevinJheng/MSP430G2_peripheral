@@ -58,6 +58,12 @@ void serial_init(void)
     #if BaurdRate == 9600 
 	UCA0BR1 = 3; UCA0BR0 = 65; UCA0MCTL = UCBRS_2; 
     #endif
+
+#elif CPU_Speed_Mhz == 16
+    #if BaurdRate == 9600 
+	UCA0BR1 = 0; UCA0BR0 = 104; UCA0MCTL = UCBRF_3+UCOS16; 
+    #endif
+
 #endif
 
     Port_SEL |= rxbit_UART + txbit_UART;

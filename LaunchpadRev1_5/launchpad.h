@@ -6,6 +6,7 @@
 #define CPU_Speed_Mhz 8
 //#define CPU_Speed_Mhz 1
 //#define CPU_Speed_Mhz 8
+//#define CPU_Speed_Mhz 16
 
 #define BaurdRate 9600 
 

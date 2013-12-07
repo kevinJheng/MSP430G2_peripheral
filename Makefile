@@ -49,7 +49,7 @@ LOADER  = MSP430Flasher.exe
 #CP      = cp -p
 
 
-.PHONY: all clean load dev
+.PHONY: all clean dev
 all: $(TARGET).elf $(TARGET).hex $(TARGET).list tags 
 load: $(TARGET).lad
 # link all objects into an elf File & report size
