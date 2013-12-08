@@ -3,6 +3,7 @@ nrf24l01
 霍爾感測器
 4051
 3.3V Lcd
+AAA->AA adapter
 
 接出Launchpad Downloader的排線
 msp430g2553

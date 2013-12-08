@@ -58,7 +58,7 @@ int main(void)
 	
 
 	P1OUT ^= green_LED;                          
-	printf("%p", adresult);
+	//printf("%p", adresult);
 	for (counter = 0; counter < 16; counter++) {
 	    printf(",%3d", adresult[counter]);
 	    adresult[counter]=0;
@@ -75,6 +75,7 @@ int main(void)
 __interrupt void ADC10_ISR(void)
 {
   //__bic_SR_register_on_exit(LPM3_bits);     // Clear LPM3 bits from 0(SR)
+  /*
   int counter;
   static unsigned int num =0;
   num+=1;
@@ -82,6 +83,7 @@ __interrupt void ADC10_ISR(void)
   putchar('{');putchar('0'+num); putchar('}');
 
   if (num == 9) num=0;
+  */
 
   
 }

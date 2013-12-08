@@ -38,12 +38,12 @@ __interrupt void Timer_A (void)
     P1OUT ^= red_LED;                            // Toggle P1.0
 
     times_step_up(&now,16);
-    if (now.min_inc==0) {
+    if ( now.min_inc==0) {
     //{
 	printf("%2d:",now.hour);
 	printf("%2d:",now.minute);
 	printf("%2d:",now.sec);
-	printf("%2d\n",now.min_inc);
+	printf("%2d",now.min_inc);
 	__bic_SR_register_on_exit(LPM3_bits);     // Clear LPM3 bits from 0(SR)
     }
 
@@ -175,9 +175,10 @@ void Init_ADC10_DTC_trigCCR0_Single_Channel(unsigned char sizDTC,unsigned * stAd
 //	|ADC10SHT_2  // 16 x ADC10CLKs 
 	|ADC10SHT_3  // 64 x ADC10CLKs 
 	/* ======== Bit control Zone======== */
-//	|ADC10SR   //ref. buf. drive capability 1:50ksps        0:200ksps
-//	|REFBURST  // REFOUT mode               1:continuously  0:on only for sample&hold
-//	|REF2_5V   // Ref Volt.                 1:2.5V          0:1.5V
+//	|ADC10SR   //ref. buf. drive capability 1:50ksps                   0:200ksps
+	|REFOUT     // ADC10 Enalbe output of Ref. */
+//	|REFBURST  // REFOUT mode               1:on only for sample&hold  0:continuously
+//	|REF2_5V   // Ref Volt.                 1:2.5V                     0:1.5V
 	|REFON     // Ref. Volt. on
 	|ADC10ON   // ADC10 Enable
 	|ADC10IE   // ADC10 Interrupt Enalbe
@@ -196,12 +197,12 @@ void Init_ADC10_DTC_trigCCR0_Single_Channel(unsigned char sizDTC,unsigned * stAd
 //	|INCH_2         // A2
 //	|INCH_3         // A3
 //	|INCH_4         // A4
-//	|INCH_5         // A5
+	|INCH_5         // A5
 //	|INCH_6         // A6
 //	|INCH_7         // A7
 //	|INCH_8         // VeREF+
 //	|INCH_9         // VREF-/VeREF-
-	|INCH_10        // Temperature Sensor
+//	|INCH_10        // Temperature Sensor
 //	|INCH_11        // (VCC-VSS)/2
 	/* ======== Bit control Zone======== */
 //	|ADC10DF        // ADC10 Data Format 0:binary 1:2's complement
@@ -254,7 +255,7 @@ void Init_ADC10_DTC_trigCCR0_Single_Channel(unsigned char sizDTC,unsigned * stAd
     *putSartAddr = (unsigned)stAddr;
 
     /* ---- Analog input 1:Enable 0:Disable---- */
-    ADC10AE0 =   ~BIT7 & ~BIT6 & ~BIT5 & ~BIT4 & 
+    ADC10AE0 =   ~BIT7 & ~BIT6 & BIT5 & BIT4 & 
 	         ~BIT3 & ~BIT2 & ~BIT1 & ~BIT0  ; 
 
     DELAY_US(30);
