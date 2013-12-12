@@ -11,6 +11,9 @@
 #define DTC_Size 16
 
 TIMES now;
+unsigned int adresult[DTC_Size];
+unsigned int adc10_avg;
+
 
 unsigned char gdigit()
 {
@@ -28,14 +31,13 @@ int main(void)
     now.sec=0     ;
     now.min_inc=0 ;
 
-/*  ----to set initial time----
+///*  ----to set initial time----
     now.hour = gdigit()*10;now.hour += gdigit();
     now.minute = gdigit()*10;now.minute += gdigit();
     now.sec = gdigit()*10;now.sec += gdigit();
     getchar(); //wait enter
-*/
+
     unsigned int counter;
-    unsigned int adresult[DTC_Size];
 
 	// reset array
 	    for (counter = 0; counter < 16; counter++) 
@@ -75,15 +77,24 @@ int main(void)
 __interrupt void ADC10_ISR(void)
 {
   //__bic_SR_register_on_exit(LPM3_bits);     // Clear LPM3 bits from 0(SR)
-  /*
-  int counter;
+  unsigned counter;
   static unsigned int num =0;
-  num+=1;
-  putchar('a');putchar('d');putchar('c');
-  putchar('{');putchar('0'+num); putchar('}');
 
-  if (num == 9) num=0;
-  */
+  if (num==0) 
+      adc10_avg=0;
+  
+  for (counter = 0; counter < 16; counter++) 
+      adc10_avg += adresult[counter];
+  num += 16;
+
+
+  if (num == 64) {
+    adc10_avg>>=6; //divde 64 by shift bit
+    printf(",%d", adc10_avg);
+     num=0;
+  }
+
+
 
   
 }

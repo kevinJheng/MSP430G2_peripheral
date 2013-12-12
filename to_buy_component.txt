@@ -4,6 +4,7 @@ nrf24l01
 4051
 3.3V Lcd
 AAA->AA adapter
+irda tx & rx device
 
 接出Launchpad Downloader的排線
 msp430g2553

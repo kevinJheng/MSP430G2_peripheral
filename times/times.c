@@ -3,7 +3,7 @@
 
 
 // counts min_inc with carry_up_boundary
-int times_step_up(TIMES * target,int carry_up_boundary)
+int times_step_up(TIMES * target,unsigned carry_up_boundary)
 {
     if(carry_up_boundary > 0)
 	target->min_inc +=1;

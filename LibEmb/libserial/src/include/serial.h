@@ -20,6 +20,13 @@
 #ifndef __SERIAL_H_
 #define __SERIAL_H_
 
+#define QUEUE_SIZE 16
+typedef struct {
+    unsigned char container[QUEUE_SIZE];
+    unsigned char fetchInd;
+    unsigned char pushInd;
+} QUEUE;
+
 /**
  * Initialize the default USART with the given baudrate.
  *

@@ -37,15 +37,18 @@ __interrupt void Timer_A (void)
 {
     P1OUT ^= red_LED;                            // Toggle P1.0
 
-    times_step_up(&now,16);
+    times_step_up(&now, 256);
     if ( now.min_inc==0) {
     //{
-	printf("%2d:",now.hour);
+	printf("[%2d:",now.hour);
 	printf("%2d:",now.minute);
-	printf("%2d:",now.sec);
-	printf("%2d",now.min_inc);
-	__bic_SR_register_on_exit(LPM3_bits);     // Clear LPM3 bits from 0(SR)
+	printf("%2d]",now.sec);
+	//printf("%2d",now.min_inc);
+        if ( (now.sec%6)==0 ) 
+	  putchar('\n');
     }
+
+    
 
 
     P1OUT ^= red_LED;                            // Toggle P1.0
@@ -77,8 +80,10 @@ void Init_Timer(void)
 	//TACCR0 = (32768/8/2-1); // 1/2 sec
 	//TACCR0 = (32768/8/4-1); // 1/4 sec
 	//TACCR0 = (32768/8/8-1); // 1/8 sec
-	TACCR0 = (32768/8/16-1); // 1/16 sec
-	TACCR1 = (TACCR0+1)/2;
+	//TACCR0 = (32768/8/16-1); // 1/16 sec
+	TACCR0 = (32768/8/256-1); // 1/256 sec
+	//TACCR1 = (TACCR0+1)/2;
+	TACCR1 = 7;
 /*
  * UP mode:
  *     TAR counts from 0 to TACCR0 repeatedly
@@ -238,11 +243,11 @@ void Init_ADC10_DTC_trigCCR0_Single_Channel(unsigned char sizDTC,unsigned * stAd
 //	|OUTMOD_0    //PWM output mode: 0 - output only 
 //	|OUTMOD_1    //PWM output mode: 1 - set 
 //	|OUTMOD_2    //PWM output mode: 2 - PWM toggle/reset 
-//	|OUTMOD_3    //PWM output mode: 3 - PWM set/reset 
+	|OUTMOD_3    //PWM output mode: 3 - PWM set/reset 
 //	|OUTMOD_4    //PWM output mode: 4 - toggle 
 //	|OUTMOD_5    //PWM output mode: 5 - Reset 
 //	|OUTMOD_6    //PWM output mode: 6 - PWM toggle/set 
-	|OUTMOD_7    //PWM output mode: 7 - PWM reset/set 
+//	|OUTMOD_7    //PWM output mode: 7 - PWM reset/set 
 ;                    //msp430g2's user guide p.372  Output Example
 
 

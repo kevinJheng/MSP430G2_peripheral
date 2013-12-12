@@ -26,6 +26,8 @@
 #include "BOARD_SPEC.h"
 
 
+
+QUEUE txBuffer;
 unsigned char * ptrSerial = stAddr_UART;
 #define Port_SEL  *(ptrSerial+ 0x6)
 #define Port_SEL2 *(ptrSerial+0x21)
@@ -41,6 +43,8 @@ unsigned char * ptrSerial = stAddr_UART;
 //NFM: msp430g2_userGuide p.430 15.3.9 UART Baurd Rate Generation
 void serial_init(void)
 {
+    txBuffer.fetchInd=0;
+    txBuffer.pushInd =0;
     UCA0CTL1 |= UCSWRST;    //procedure (1)
 
 /*---- procedure (2)  ----
@@ -109,14 +113,44 @@ unsigned char serial_recv_blocking()
 	return UCA0RXBUF;
 }
 
+
+
 int putchar(unsigned char c)
 {
+    IE2 |= UCA0TXIE;
+
     if (c=='\n') putchar('\r');
 
-    while (!(IFG2&UCA0TXIFG));              // USCI_A0 TX buffer ready?
-    UCA0TXBUF = c;                    		// TX
-    return 1;
+    txBuffer.pushInd++; txBuffer.pushInd %= QUEUE_SIZE;
+    if (txBuffer.fetchInd != txBuffer.pushInd) 
+	txBuffer.container[txBuffer.pushInd] = c;
+    else
+	txBuffer.container[txBuffer.pushInd] = 'z';
+
+    return;
 }
+#pragma vector=USCIAB0TX_VECTOR
+__interrupt void USCIA0_tx_ISR(void)
+{
+    if (txBuffer.fetchInd != txBuffer.pushInd) {
+	P1OUT |= green_LED;
+
+	txBuffer.fetchInd++;  txBuffer.fetchInd %= QUEUE_SIZE;
+	UCA0TXBUF = txBuffer.container[txBuffer.fetchInd];
+
+	P1OUT &= ~green_LED;
+	return;
+    }
+    else {
+	IE2 &= ~UCA0TXIE;
+	return;
+    }
+    
+
+
+}
+
+
 
 int getchar(void)
 {
